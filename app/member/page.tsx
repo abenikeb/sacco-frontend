@@ -45,7 +45,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { membersAPI } from "@/lib/api";
 
-
 interface MemberData {
 	name: string;
 	totalSavings: number;
@@ -131,7 +130,6 @@ export default function MemberDashboardPage() {
 	const [activeTab, setActiveTab] = useState("overview");
 
 	const fetchMemberData = async () => {
-		
 		if (!user?.etNumber) return;
 
 		try {
@@ -154,7 +152,7 @@ export default function MemberDashboardPage() {
 			// }
 
 			// const data = await response.json();
-			const data = await membersAPI.getMember(user?.etNumber)
+			const data = await membersAPI.getMember(user?.etNumber);
 			setMemberData(data.member);
 			setError(null);
 		} catch (err) {
@@ -277,10 +275,8 @@ export default function MemberDashboardPage() {
 		"#14b8a6", // teal-500
 	];
 
-	if(!user){
-		return (
-			<div>please log in first </div>
-		)	
+	if (!user) {
+		return <div>please log in first </div>;
 	}
 
 	if (isLoading) {
@@ -1318,6 +1314,5 @@ export default function MemberDashboardPage() {
 				}
 			`}</style>
 		</motion.div>
-
-			);
+	);
 }

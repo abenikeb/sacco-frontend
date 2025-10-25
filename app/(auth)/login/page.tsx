@@ -34,9 +34,8 @@ export default function LoginPage() {
 
 		const result = await login(identifier, password);
 
-		
 		if (result.success) {
-			router.push(result.redirectUrl as string)
+			router.push(result.redirectUrl as string);
 		} else {
 			setError("Invalid credentials");
 		}
@@ -91,21 +90,20 @@ export default function LoginPage() {
 										Forgot password?
 									</a>
 								</div>
-								
-									<div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-										<LockKeyhole className="h-4 w-4 text-slate-400" />
-									</div>
-									<PasswordInput
-										id="password"
-										name="password"
-										type="password"
-										required
-										className="pl-10"
-										placeholder="Enter your password"
-										value={password}
-										onChange={(e) => setPassword(e.target.value)}
-									/>
-								
+
+								<div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+									<LockKeyhole className="h-4 w-4 text-slate-400" />
+								</div>
+								<PasswordInput
+									id="password"
+									name="password"
+									type="password"
+									required
+									className="pl-10"
+									placeholder="Enter your password"
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+								/>
 							</div>
 
 							{error && (

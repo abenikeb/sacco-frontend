@@ -29,14 +29,15 @@ interface MemberDetails {
 	name: string;
 	memberNumber: number;
 	etNumber: number;
-	balance: {
-		totalSavings: number;
-		totalContributions: number;
-		costOfShare: number;
-		registrationFee: number;
-		membershipFee: number;
-		willingDeposit: number;
-	};
+
+	totalSavings: number;
+	totalContributions: number;
+	totalCostOfShare: number;
+	totalRegistrationFee: number;
+	totalMembershipFee: number;
+	totalWillingDeposit: number;
+	totalLoanAmount: number;
+
 	totalContribution: number;
 	email: string;
 	phone: string;
@@ -91,12 +92,15 @@ function MemberDetailPage() {
 			setIsLoading(true);
 			try {
 				// const response = await fetch(`/api/members/${params.id}`);
-				
-				const response = await membersAPI.getMember(params.id[0]);
+
+				const response = await membersAPI.getMember((params as any).id);
+				console.log({
+					response,
+				});
 				if (!response) {
 					throw new Error("Failed to fetch member details");
 				}
-				
+
 				setMemberDetails(response.member);
 			} catch (error) {
 				console.error("Error fetching member details:", error);
@@ -243,7 +247,7 @@ function MemberDetailPage() {
 									Total Savings
 								</p>
 								<p className="text-2xl font-bold text-green-600">
-									{formatCurrency(memberDetails.balance.totalSavings)}
+									{formatCurrency(memberDetails.totalSavings)}
 								</p>
 							</div>
 							<div>
@@ -251,7 +255,7 @@ function MemberDetailPage() {
 									Total Contributions
 								</p>
 								<p className="text-2xl font-bold text-blue-600">
-									{formatCurrency(memberDetails.balance.totalContributions)}
+									{formatCurrency(memberDetails.totalContributions)}
 								</p>
 							</div>
 							<div>
@@ -259,7 +263,7 @@ function MemberDetailPage() {
 									Cost of Share
 								</p>
 								<p className="text-xl font-semibold text-purple-600">
-									{formatCurrency(memberDetails.balance.costOfShare)}
+									{formatCurrency(memberDetails.totalCostOfShare)}
 								</p>
 							</div>
 							<div>
@@ -267,7 +271,7 @@ function MemberDetailPage() {
 									Registration Fee
 								</p>
 								<p className="text-xl font-semibold text-orange-600">
-									{formatCurrency(memberDetails.balance.registrationFee)}
+									{formatCurrency(memberDetails.totalRegistrationFee)}
 								</p>
 							</div>
 							<div>
@@ -275,7 +279,7 @@ function MemberDetailPage() {
 									Membership Fee
 								</p>
 								<p className="text-xl font-semibold text-indigo-600">
-									{formatCurrency(memberDetails.balance.membershipFee)}
+									{formatCurrency(memberDetails.totalMembershipFee)}
 								</p>
 							</div>
 							<div>
@@ -283,7 +287,15 @@ function MemberDetailPage() {
 									Willing Deposit
 								</p>
 								<p className="text-xl font-semibold text-teal-600">
-									{formatCurrency(memberDetails.balance.willingDeposit)}
+									{formatCurrency(memberDetails.totalWillingDeposit)}
+								</p>
+							</div>
+							<div>
+								<p className="text-sm font-medium text-gray-500">
+									totalLoanAmount
+								</p>
+								<p className="text-xl font-semibold text-teal-600">
+									{formatCurrency(memberDetails.totalLoanAmount)}
 								</p>
 							</div>
 						</div>

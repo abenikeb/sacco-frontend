@@ -20,7 +20,7 @@ import {
 	MoreHorizontal,
 	Download,
 } from "lucide-react";
-import { format, parseISO, startOfMonth, addMonths  } from "date-fns";
+import { format, parseISO, startOfMonth, addMonths } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -81,15 +81,12 @@ export default function MembersListPage() {
 
 	const fetchMembers = useCallback(async () => {
 		try {
-			// const url = new URL("/api/members", window.location.origin);
-			// url.searchParams.append("effectiveDate", effectiveDate.toISOString());
-			// const response = await fetch(url.toString());
 			const response = await membersAPI.getMembersByDate(effectiveDate);
 			if (!response) {
 				throw new Error("Failed to fetch members");
 			}
 			// const data = await response.json();
-			console.log(response)
+			console.log({ response });
 			setMembers(response);
 		} catch (error) {
 			console.error("Error fetching members:", error);
@@ -104,11 +101,7 @@ export default function MembersListPage() {
 	useEffect(() => {
 		fetchMembers();
 	}, [fetchMembers]);
-	
-	// useEffect(() => {
-	// 	fetchMembers();
-	// }, []);
-	
+
 	const columns: ColumnDef<Member>[] = useMemo(
 		() => [
 			{
@@ -128,7 +121,6 @@ export default function MembersListPage() {
 						onCheckedChange={(value) => row.toggleSelected(!!value)}
 						aria-label="Select row"
 					/>
-					
 				),
 				enableSorting: false,
 				enableHiding: false,
@@ -215,7 +207,7 @@ export default function MembersListPage() {
 				header: "Total Contributions",
 				cell: ({ row }) => {
 					const amount = row.original.balance.totalContributions;
-				
+
 					if (amount === 0) {
 						return <div className="text-muted-foreground italic">No data</div>;
 					}
@@ -323,7 +315,6 @@ export default function MembersListPage() {
 		}
 	}, []);
 
-
 	const handleExport = useCallback(() => {
 		const headers = columns
 			.filter(
@@ -394,7 +385,6 @@ export default function MembersListPage() {
 						Add Member
 					</Button>
 					<Button onClick={() => router.push("/dashboard/members/import")}>
-					
 						Import Members
 					</Button>
 					<Button onClick={handleExport} variant="outline">
@@ -501,4 +491,3 @@ export default function MembersListPage() {
 		</div>
 	);
 }
-
