@@ -276,7 +276,7 @@ export default function MemberDashboardPage() {
 	];
 
 	if (!user) {
-		return <div>please log in first </div>;
+		return <div>Loading... </div>;
 	}
 
 	if (isLoading) {

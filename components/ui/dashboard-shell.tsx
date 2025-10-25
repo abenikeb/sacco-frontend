@@ -32,15 +32,14 @@ import { cn } from "@/lib/utils";
 interface DashboardShellProps {
 	children: React.ReactNode;
 }
-type UserType  = {
-	etNumber : number,
-	id : number,
-	phone:string,
-	role: string
-}
+type UserType = {
+	etNumber: number;
+	id: number;
+	phone: string;
+	role: string;
+};
 
 export function DashboardShell({ children }: DashboardShellProps) {
-
 	const { user, logout } = useAuth();
 	const pathname = usePathname();
 	const [isOpen, setIsOpen] = useState(false);
@@ -54,126 +53,124 @@ export function DashboardShell({ children }: DashboardShellProps) {
 	};
 
 	const navItems = [
-  {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: Home,
-    roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
-  },
-  {
-    title: "Members",
-    href: "/dashboard/members",
-    icon: Users,
-    roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
-  },
-  {
-    title: "Add Member",
-    href: "/dashboard/members/add",
-    icon: UserPlus,
-    roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
-  },
-  {
-    title: "Loans",
-    href: "/dashboard/loans/details",
-    icon: CreditCard,
-    roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
-  },
-  // {
-  //   title: "Manage Loans",
-  //   href: "/dashboard/loans/manage",
-  //   icon: CreditCard,
-  //   roles: [
-  //     "LOAN_OFFICER",
-  //     "BRANCH_MANAGER",
-  //     "REGIONAL_MANAGER",
-  //     "FINANCE_ADMIN",
-  //   ],
-  // },
-  // {
-  //   title: "Loan Details",
-  //   href: "/dashboard/loans/details",
-  //   icon: FileSearch,
-  //   roles: [
-  //     "LOAN_OFFICER",
-  //     "BRANCH_MANAGER",
-  //     "REGIONAL_MANAGER",
-  //     "FINANCE_ADMIN",
-  //   ],
-  // },
-  {
-    title: "Disburse Loans",
-    href: "/dashboard/loans/disburse",
-    icon: DollarSign,
-    roles: ["COMMITTEE"],
-  },
-  {
-    title: "Approval History",
-    href: "/dashboard/loans/approval-history",
-    icon: History,
-    roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
-  },
-  {
-    title: "Verify Loans",
-    href: "/dashboard/loans/verify",
-    icon: CheckCircle,
-    roles: ["ACCOUNTANT"],
-  },
-  // {
-  //   title: "Approve Loans",
-  //   href: "/dashboard/loans/approve",
-  //   icon: FileText,
-  //   roles: ["BRANCH_MANAGER", "REGIONAL_MANAGER"],
-  // },
-  {
-    title: "Loan Calculator",
-    href: "/dashboard/loans/calculator",
-    icon: Calculator,
-    roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
-  },
-  {
-    title: "Loan Documents",
-    href: "/dashboard/loans/documents",
-    icon: Upload,
-    roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
-  },
-  {
-    title: "Loan Approval Dashboard",
-    href: "/dashboard/loans/approval-dashboard",
-    icon: ClipboardList,
-    roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
-  },
-  {
-    title: "Membership Requests",
-    href: "/dashboard/membership-requests",
-    icon: Users,
-    roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR"],
-  },
-  {
-    title: "Reports",
-    href: "/dashboard/reports",
-    icon: BarChart3,
-    roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
-  },
-  {
-    title: "Analytics",
-    href: "/dashboard/analytics",
-    icon: PieChart,
-    roles: ["MANAGER", "SUPERVISOR", "COMMITTEE"],
-  },
-  {
-    title: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
-    roles: ["COMMITTEE"],
-  },
-];
-
-    
+		{
+			title: "Dashboard",
+			href: "/dashboard",
+			icon: Home,
+			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
+		},
+		{
+			title: "Members",
+			href: "/dashboard/members",
+			icon: Users,
+			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
+		},
+		{
+			title: "Add Member",
+			href: "/dashboard/members/add",
+			icon: UserPlus,
+			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
+		},
+		{
+			title: "Loans",
+			href: "/dashboard/loans/details",
+			icon: CreditCard,
+			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
+		},
+		// {
+		//   title: "Manage Loans",
+		//   href: "/dashboard/loans/manage",
+		//   icon: CreditCard,
+		//   roles: [
+		//     "LOAN_OFFICER",
+		//     "BRANCH_MANAGER",
+		//     "REGIONAL_MANAGER",
+		//     "FINANCE_ADMIN",
+		//   ],
+		// },
+		// {
+		//   title: "Loan Details",
+		//   href: "/dashboard/loans/details",
+		//   icon: FileSearch,
+		//   roles: [
+		//     "LOAN_OFFICER",
+		//     "BRANCH_MANAGER",
+		//     "REGIONAL_MANAGER",
+		//     "FINANCE_ADMIN",
+		//   ],
+		// },
+		{
+			title: "Disburse Loans",
+			href: "/dashboard/loans/disburse",
+			icon: DollarSign,
+			roles: ["COMMITTEE"],
+		},
+		{
+			title: "Approval History",
+			href: "/dashboard/loans/approval-history",
+			icon: History,
+			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
+		},
+		// {
+		// 	title: "Verify Loans",
+		// 	href: "/dashboard/loans/verify",
+		// 	icon: CheckCircle,
+		// 	roles: ["ACCOUNTANT"],
+		// },
+		// {
+		//   title: "Approve Loans",
+		//   href: "/dashboard/loans/approve",
+		//   icon: FileText,
+		//   roles: ["BRANCH_MANAGER", "REGIONAL_MANAGER"],
+		// },
+		{
+			title: "Loan Calculator",
+			href: "/dashboard/loans/calculator",
+			icon: Calculator,
+			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
+		},
+		{
+			title: "Loan Documents",
+			href: "/dashboard/loans/documents",
+			icon: Upload,
+			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
+		},
+		{
+			title: "Loan Approval Dashboard",
+			href: "/dashboard/loans/approval-dashboard",
+			icon: ClipboardList,
+			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
+		},
+		{
+			title: "Membership Requests",
+			href: "/dashboard/membership-requests",
+			icon: Users,
+			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR"],
+		},
+		{
+			title: "Reports",
+			href: "/dashboard/reports",
+			icon: BarChart3,
+			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
+		},
+		{
+			title: "Analytics",
+			href: "/dashboard/analytics",
+			icon: PieChart,
+			roles: ["MANAGER", "SUPERVISOR", "COMMITTEE"],
+		},
+		{
+			title: "Settings",
+			href: "/dashboard/settings",
+			icon: Settings,
+			roles: ["COMMITTEE"],
+		},
+	];
 
 	const filteredNavItems = navItems.filter(
-		(item) => user && item.roles.includes(user.role )
+		(item) => user && item.roles.includes(user.role)
 	);
-    
+
 	useEffect(() => {
 		const handleResize = () => {
 			if (window.innerWidth >= 768) {
@@ -185,10 +182,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
 
-	if(!user){
-		return (
-			<div>please log in first </div>
-		)	
+	if (!user) {
+		return <div>Loading... </div>;
 	}
 	return (
 		<div className="flex min-h-screen flex-col bg-gray-100">
@@ -198,7 +193,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
 					<Menu className="h-6 w-6" />
 					<span className="sr-only">Toggle Menu</span>
 				</Button>
-				<div className="font-semibold">Microfinance Admin</div>
+				<div className="font-semibold">MFINS Admin</div>
 				<div className="w-6"></div> {/* Spacer for alignment */}
 			</header>
 
@@ -216,7 +211,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
 					isOpen ? "translate-x-0" : "-translate-x-full"
 				)}>
 				<div className="flex h-16 items-center justify-between border-b px-4">
-					<div className="font-semibold">Microfinance Admin</div>
+					<div className="font-semibold">Ethio Credit MF Admin</div>
 					<Button
 						variant="ghost"
 						size="icon"
@@ -230,7 +225,6 @@ export function DashboardShell({ children }: DashboardShellProps) {
 					<div className="flex-1 overflow-y-auto py-2">
 						<nav className="grid gap-1 px-2">
 							{filteredNavItems.map((item, index) => (
-								
 								<Link
 									key={index}
 									href={item.href}

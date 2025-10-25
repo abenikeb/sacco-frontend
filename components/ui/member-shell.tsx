@@ -105,10 +105,8 @@ export function MemberShell({ children }: MemberShellProps) {
 		// 	icon: Settings,
 		// },
 	];
-	if(!user){
-		return (
-			<div>please log in first </div>
-		)	
+	if (!user) {
+		return <div>Loading... </div>;
 	}
 
 	return (

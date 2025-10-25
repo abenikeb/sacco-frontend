@@ -57,10 +57,9 @@ export default function MembershipRequestsReviewPage() {
 	const [activeTab, setActiveTab] = useState("all");
 	const router = useRouter();
 	const { toast } = useToast();
-	const {user, logout} = useAuth();
+	const { user, logout } = useAuth();
 	useEffect(() => {
 		fetchMembershipRequests();
-		
 	}, []);
 
 	useEffect(() => {
@@ -74,14 +73,12 @@ export default function MembershipRequestsReviewPage() {
 	}, [activeTab, requests]);
 
 	//let us get the role of the logged user
-	
 
 	const fetchMembershipRequests = async () => {
 		setIsLoading(true);
 		try {
 			const response = await membershipAPI.getMembershipRequests();
 			if (response) {
-				
 				setRequests(response);
 				setFilteredRequests(response);
 			} else {
@@ -102,11 +99,12 @@ export default function MembershipRequestsReviewPage() {
 	const handleStatusUpdate = async (id: number, newStatus: string) => {
 		setIsProcessing(true);
 		try {
-			const response = await membershipAPI.getMembershipRequestById(id, newStatus)
+			const response = await membershipAPI.getMembershipRequestById(
+				id,
+				newStatus
+			);
 
 			if (response) {
-				
-
 				// Show appropriate toast based on status
 				if (newStatus === "APPROVED") {
 					toast({
@@ -272,12 +270,13 @@ export default function MembershipRequestsReviewPage() {
 																		size="icon"
 																		className="text-green-600 hover:text-green-700 hover:bg-green-50"
 																		onClick={() => {
-																			let status = user?.role !== 'MANAGER' ? 'PENDING' : 'APPROVED';
-																			
+																			let status =
+																				user?.role !== "MANAGER"
+																					? "PENDING"
+																					: "APPROVED";
+
 																			handleStatusUpdate(request.id, status);
-																		}
-																			
-																		}
+																		}}
 																		disabled={isProcessing}
 																		title="Approve Request">
 																		<CheckCircle className="h-4 w-4" />
