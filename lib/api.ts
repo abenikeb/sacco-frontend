@@ -554,6 +554,77 @@ export const loanDocument = {
 	},
 };
 
+export const settingsAPI = {
+	// User Management
+	getAllUsers: async (page = 1, limit = 20) => {
+		const response = await api.get("/settings/users", {
+			params: { page, limit },
+		});
+		return response.data;
+	},
+
+	getUserById: async (userId: number) => {
+		const response = await api.get(`/settings/users/${userId}`);
+		return response.data;
+	},
+
+	createUser: async (userData: {
+		name: string;
+		email: string;
+		phone: string;
+		password: string;
+		role: string;
+	}) => {
+		const response = await api.post("/settings/users", userData);
+		return response.data;
+	},
+
+	updateUserRole: async (userId: number, role: string) => {
+		const response = await api.put(`/settings/users/${userId}/role`, { role });
+		return response.data;
+	},
+
+	deleteUser: async (userId: number) => {
+		const response = await api.delete(`/settings/users/${userId}`);
+		return response.data;
+	},
+
+	// Roles & Permissions
+	getAllRoles: async () => {
+		const response = await api.get("/settings/roles");
+		return response.data;
+	},
+
+	getRolePermissions: async (role: string) => {
+		const response = await api.get(`/settings/roles/${role}/permissions`);
+		return response.data;
+	},
+
+	// System Configuration
+	getSystemConfig: async () => {
+		const response = await api.get("/settings/system-config");
+		return response.data;
+	},
+
+	updateSystemConfig: async (config: Record<string, any>) => {
+		const response = await api.put("/settings/system-config", config);
+		return response.data;
+	},
+
+	// Audit & Activity
+	getAuditLogs: async (page = 1, limit = 50) => {
+		const response = await api.get("/settings/audit-logs", {
+			params: { page, limit },
+		});
+		return response.data;
+	},
+
+	getUserActivitySummary: async () => {
+		const response = await api.get("/settings/user-activity-summary");
+		return response.data;
+	},
+};
+
 export const notificationAPI = {
 	getNotifications: async () => {
 		const response = await api.get("/notifications");
