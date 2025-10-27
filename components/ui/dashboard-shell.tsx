@@ -77,17 +77,18 @@ export function DashboardShell({ children }: DashboardShellProps) {
 			icon: CreditCard,
 			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
 		},
-		// {
-		//   title: "Manage Loans",
-		//   href: "/dashboard/loans/manage",
-		//   icon: CreditCard,
-		//   roles: [
-		//     "LOAN_OFFICER",
-		//     "BRANCH_MANAGER",
-		//     "REGIONAL_MANAGER",
-		//     "FINANCE_ADMIN",
-		//   ],
-		// },
+		{
+			title: "Loan Products",
+			href: "/dashboard/loans/loan-products",
+			icon: Calculator,
+			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
+		},
+		{
+			title: "Withdrawals",
+			href: "/dashboard/withdrawals/approvals",
+			icon: CreditCard,
+			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR"],
+		},
 		// {
 		//   title: "Loan Details",
 		//   href: "/dashboard/loans/details",
@@ -146,6 +147,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
 			href: "/dashboard/membership-requests",
 			icon: Users,
 			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR"],
+		},
+		{
+			title: "Accounting",
+			href: "/dashboard/accounting",
+			icon: BarChart3,
+			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
 		},
 		{
 			title: "Reports",

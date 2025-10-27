@@ -129,6 +129,11 @@ export const membersAPI = {
 		return response.data;
 	},
 
+	getCurrentMember: async () => {
+		const response = await api.get(`/members/current/user`);
+		return response.data;
+	},
+
 	getMembersByDate: async (effectiveDate: Date) => {
 		const response = await api.get("/members__", {
 			params: { effectiveDate: effectiveDate.toISOString() },
@@ -184,6 +189,7 @@ export const membersLoanAPI = {
 		tenureMonths: number;
 		purpose: string;
 		coSigner1?: string;
+		loanProductId?: any;
 		coSigner2?: string;
 		agreement: File;
 	}) => {
@@ -261,9 +267,188 @@ export const membersSavingsAPI = {
 	},
 };
 
+//withdrawl
+
+export const withdrawalAPI = {
+	getCurrentBalance: async (memberId: any) => {
+		const response = await api.get(`/withdrawals/balance/${memberId}`);
+		console.log({ balanceWIthdrawl: response });
+		return response.data;
+	},
+
+	getBalanceHistory: async (memberId: any) => {
+		const response = await api.get(`/withdrawals/history/${memberId}`);
+		return response.data;
+	},
+
+	getPendingWithdrawals: async (userRole: any) => {
+		const response = await api.get(`/withdrawals/pending/${userRole}`);
+		console.log({ pendingEesponse: response });
+		return response.data;
+	},
+	updateWithdrawalRequest: async ({ url, method, data }: any) => {
+		console.log({ url, method, data });
+		if (method === "POST") {
+			const response = await api.post(url, {
+				data,
+			});
+			return response.data;
+		}
+		const response = await api.put(url, {
+			data,
+		});
+		return response.data;
+	},
+};
+
+export const accountingAPI = {
+	// Get trial balance
+	getTrialBalance: async (asOfDate?: string) => {
+		const response = await api.get("/accounting/trial-balance", {
+			params: { asOfDate },
+		});
+		return response.data;
+	},
+
+	// Get balance sheet
+	getBalanceSheet: async (asOfDate?: string) => {
+		const response = await api.get("/accounting/balance-sheet", {
+			params: { asOfDate },
+		});
+		return response.data;
+	},
+
+	// Get income statement
+	getIncomeStatement: async (fromDate?: string, toDate?: string) => {
+		const response = await api.get("/accounting/income-statement", {
+			params: { fromDate, toDate },
+		});
+		return response.data;
+	},
+
+	// Get accounting metrics
+	getMetrics: async () => {
+		const response = await api.get("/accounting/metrics");
+		return response.data;
+	},
+
+	// Get journal entries
+	getJournalEntries: async (
+		page = 1,
+		limit = 20,
+		fromDate?: string,
+		toDate?: string
+	) => {
+		const response = await api.get("/accounting/journal-entries", {
+			params: { page, limit, fromDate, toDate },
+		});
+		return response.data;
+	},
+
+	// Get general ledger for an account
+	getGeneralLedger: async (
+		accountCode: string,
+		fromDate?: string,
+		toDate?: string
+	) => {
+		const response = await api.get(
+			`/accounting/general-ledger/${accountCode}`,
+			{
+				params: { fromDate, toDate },
+			}
+		);
+		return response.data;
+	},
+
+	// Get account distribution
+	getAccountDistribution: async () => {
+		const response = await api.get("/accounting/account-distribution");
+		return response.data;
+	},
+
+	// Get journal entries trend
+	getJournalTrend: async () => {
+		const response = await api.get("/accounting/journal-trend");
+		return response.data;
+	},
+
+	// Get account balance
+	getAccountBalance: async (code: string, asOfDate?: string) => {
+		const response = await api.get(`/accounting/account-balance/${code}`, {
+			params: { asOfDate },
+		});
+		return response.data;
+	},
+
+	// Initialize Chart of Accounts
+	initializeChartOfAccounts: async () => {
+		const response = await api.post("/accounting/initialize-coa");
+		return response.data;
+	},
+
+	// Get chart of accounts
+	getChartOfAccounts: async (isActive?: boolean) => {
+		const response = await api.get("/accounting/chart-of-accounts", {
+			params: { isActive },
+		});
+		return response.data;
+	},
+
+	// Get general ledger summary
+	getGeneralLedgerSummary: async (fromDate?: string, toDate?: string) => {
+		const response = await api.get("/accounting/general-ledger-summary", {
+			params: { fromDate, toDate },
+		});
+		return response.data;
+	},
+};
+
+export const analyticsAPI = {
+	getMemberGrowth: async () => {
+		const response = await api.get("/analytics/member-growth");
+		return response.data;
+	},
+
+	getSavingsTrends: async () => {
+		const response = await api.get("/analytics/savings-trends");
+		return response.data;
+	},
+
+	getLoanPerformance: async () => {
+		const response = await api.get("/analytics/loan-performance");
+		return response.data;
+	},
+
+	getDelinquencyReport: async () => {
+		const response = await api.get("/analytics/delinquency-report");
+		return response.data;
+	},
+
+	getFinancialPerformance: async (fromDate?: string, toDate?: string) => {
+		const response = await api.get("/analytics/financial-performance", {
+			params: { fromDate, toDate },
+		});
+		return response.data;
+	},
+
+	getLoanPortfolioBreakdown: async () => {
+		const response = await api.get("/analytics/loan-portfolio-breakdown");
+		return response.data;
+	},
+
+	getMemberDemographics: async () => {
+		const response = await api.get("/analytics/member-demographics");
+		return response.data;
+	},
+};
+
 export const loanAPI = {
 	getLoan: async () => {
 		const response = await api.get("/loans");
+		return response.data;
+	},
+	getLoanProduct: async () => {
+		const response = await api.get("/loan-products");
 		return response.data;
 	},
 	getLoanById: async (id: string[] | string) => {
@@ -297,6 +482,25 @@ export const loanAPI = {
 		const response = await api.post(`/loans/approve/${id}`, {
 			status,
 			comment,
+		});
+		return response.data;
+	},
+	autoAssignMemeber: async (totalContributions: any) => {
+		const response = await api.post("/loan-products/auto-assign", {
+			totalContributions,
+		});
+		return response.data;
+	},
+	updateLoanProduct: async ({ url, method, formData }: any) => {
+		console.log({ url, method, formData });
+		if (method === "POST") {
+			const response = await api.post(url, {
+				formData,
+			});
+			return response.data;
+		}
+		const response = await api.put(url, {
+			formData,
 		});
 		return response.data;
 	},
