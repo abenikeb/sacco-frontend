@@ -136,12 +136,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
 			icon: Upload,
 			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
 		},
-		{
-			title: "Loan Approval Dashboard",
-			href: "/dashboard/loans/approval-dashboard",
-			icon: ClipboardList,
-			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
-		},
+		// {
+		// 	title: "Loan Approval Dashboard",
+		// 	href: "/dashboard/loans/approval-dashboard",
+		// 	icon: ClipboardList,
+		// 	roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
+		// },
 		{
 			title: "Membership Requests",
 			href: "/dashboard/membership-requests",
@@ -160,12 +160,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
 			icon: BarChart3,
 			roles: ["ACCOUNTANT", "MANAGER", "SUPERVISOR", "COMMITTEE"],
 		},
-		{
-			title: "Analytics",
-			href: "/dashboard/analytics",
-			icon: PieChart,
-			roles: ["MANAGER", "SUPERVISOR", "COMMITTEE"],
-		},
+		// {
+		// 	title: "Analytics",
+		// 	href: "/dashboard/analytics",
+		// 	icon: PieChart,
+		// 	roles: ["MANAGER", "SUPERVISOR", "COMMITTEE"],
+		// },
 		{
 			title: "Settings",
 			href: "/dashboard/settings",
