@@ -65,6 +65,16 @@ export function MemberShell({ children }: MemberShellProps) {
 			icon: FileText,
 		},
 		{
+			title: "Withdrawals",
+			href: "/member/withdrawals/request",
+			icon: PiggyBank,
+		},
+		{
+			title: "Withdrawals History",
+			href: "/member/withdrawals/history",
+			icon: PiggyBank,
+		},
+		{
 			title: "Loan Calculator",
 			href: "/member/loans/calculator",
 			icon: Calculator,
@@ -79,11 +89,11 @@ export function MemberShell({ children }: MemberShellProps) {
 		// 	href: "/member/membership",
 		// 	icon: FileCheck,
 		// },
-		// {
-		// 	title: "Willing Deposit Request",
-		// 	href: "/member/willing-deposit/request",
-		// 	icon: PiggyBank,
-		// },
+		{
+			title: "Willing Deposit Request",
+			href: "/member/willing-deposit/request",
+			icon: PiggyBank,
+		},
 		// {
 		// 	title: "Willing Deposit History",
 		// 	href: "/member/willing-deposit/history",
