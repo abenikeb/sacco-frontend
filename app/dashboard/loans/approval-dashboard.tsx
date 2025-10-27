@@ -43,7 +43,6 @@ export default function LoanApprovalDashboard() {
 		try {
 			const response = await loanAPI.getPendingLoans();
 			if (response) {
-				
 				setLoans(response);
 			} else {
 				throw new Error("Failed to fetch loans");
@@ -56,17 +55,11 @@ export default function LoanApprovalDashboard() {
 
 	const handleApprove = async (loanId: number) => {
 		try {
-			// const response = await fetch("/api/loans/approve", {
-			// 	method: "POST",
-			// 	headers: { "Content-Type": "application/json" },
-			// 	body: JSON.stringify({ loanId, status: "APPROVED" }),
-			// });
-			// const response = await loanAPI.approveLoans(loanAPI);
 			const response = await loanAPI.approveLoans(
-													loanId,
-													"APPROVED",
-													"Loan has been approved"
-													);
+				loanId,
+				"APPROVED",
+				"Loan has been approved"
+			);
 
 			if (response) {
 				toast({ title: "Loan approved successfully" });
@@ -83,10 +76,10 @@ export default function LoanApprovalDashboard() {
 	const handleReject = async (loanId: number) => {
 		try {
 			const response = await loanAPI.approveLoans(
-													loanId,
-													"REJECTED",
-													"Loan has been rejected"
-													);
+				loanId,
+				"REJECTED",
+				"Loan has been rejected"
+			);
 
 			if (response.ok) {
 				toast({ title: "Loan rejected successfully" });
@@ -130,7 +123,7 @@ export default function LoanApprovalDashboard() {
 						<TableRow key={loan.id}>
 							<TableCell>{loan.id}</TableCell>
 							<TableCell>{loan.member.name}</TableCell>
-							<TableCell>${loan.amount.toFixed(2)}</TableCell>
+							<TableCell>ETB {loan.amount.toFixed(2)}</TableCell>
 							<TableCell>{loan.interestRate}%</TableCell>
 							<TableCell>{loan.tenureMonths}</TableCell>
 							<TableCell>{loan.status}</TableCell>

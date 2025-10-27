@@ -1,12 +1,10 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-// import type { UserRole } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { authAPI } from "@/lib/api";
 
-// dashboard-shell.tsx (client component)
-type UserRole = "ACCOUNTANT" | "MANAGER" | "SUPERVISOR" | "COMMITTEE"; // define your own enum or string union here
+type UserRole = "ACCOUNTANT" | "MANAGER" | "SUPERVISOR" | "COMMITTEE";
 
 type User = {
 	id: number;
@@ -46,7 +44,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	// Load user from localStorage if token exists
 	useEffect(() => {
 		const storedUser = localStorage.getItem("user");
-		// console.log("[Component] user from AuthContext(UseEffect):", user);
 		if (!user) {
 			// router.push('/')
 			return;
@@ -62,18 +59,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		identifier: string,
 		password: string
 	): Promise<{ success: boolean; redirectUrl?: string; user?: User }> => {
-		// console.log("[AuthProvider] login() called with:", identifier);
 		try {
 			setLoading(true);
 			const { user } = await authAPI.login(identifier, password);
-			// console.log("[AuthProvider] login() response user:", user);
-			console.log(user);
-
 			if (user) {
 				localStorage.setItem("user", JSON.stringify(user));
 				setUser(user);
-				// console.log("[AuthProvider] User set:", user);
-
 				const params = new URLSearchParams(window.location.search);
 				const callbackUrl =
 					params.get("callbackUrl") ||
@@ -97,7 +88,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			setLoading(true);
 			await authAPI.logout();
 		} catch (error) {
-			// Ignore error but clear data
 		} finally {
 			localStorage.removeItem("user");
 			setUser(null);
