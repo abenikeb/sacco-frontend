@@ -133,7 +133,7 @@ export default function LoanDetailPage() {
 				if (!response) {
 					throw new Error("Failed to fetch loan details");
 				}
-				
+
 				setLoan(response);
 			} catch (error) {
 				console.error("Error fetching loan details:", error);
@@ -342,7 +342,6 @@ export default function LoanDetailPage() {
 				: `/${documentUrl}`;
 			const response = await loanDocument.getLoanDocumentByUrl(fullUrl);
 			if (response) {
-				
 				const url = URL.createObjectURL(response);
 				setSelectedDocument(url);
 			} else {
@@ -366,7 +365,6 @@ export default function LoanDetailPage() {
 				: `/${documentUrl}`;
 			const response = await loanDocument.getLoanDocumentByUrl(fullUrl);
 			if (response) {
-				
 				const url = URL.createObjectURL(response);
 				const a = document.createElement("a");
 				a.href = url;
@@ -406,13 +404,11 @@ export default function LoanDetailPage() {
 				params.id,
 				paymentFormData.repaymentId,
 				{
-				amount: paymentFormData.amount,
-				reference: paymentFormData.reference,
-				sourceType: paymentFormData.sourceType,
+					amount: paymentFormData.amount,
+					reference: paymentFormData.reference,
+					sourceType: paymentFormData.sourceType,
 				}
 			);
-
-			
 
 			if (response) {
 				toast({
@@ -425,11 +421,9 @@ export default function LoanDetailPage() {
 
 				// Refresh loan details
 				const loanResponse = await membersLoanAPI.getLoansById(params.id);
-				console.log("loanResponse", loanResponse, )
+				console.log("loanResponse", loanResponse);
 				if (loanResponse) {
-
 					setLoan(loanResponse);
-					
 				}
 			} else {
 				throw new Error(response.error || "Failed to process payment");
@@ -805,7 +799,7 @@ export default function LoanDetailPage() {
 								className="w-full sm:w-auto">
 								<Button className="w-full">
 									<Calculator className="mr-2 h-4 w-4" />
-									Loan Calculator
+									Amortization Calculator
 								</Button>
 							</Link>
 							{/* {["APPROVED", "DISBURSED"].includes(loan.status) &&

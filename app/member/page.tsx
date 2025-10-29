@@ -680,7 +680,7 @@ export default function MemberDashboardPage() {
 												<Button
 													variant="outline"
 													className="w-full border-blue-200 hover:bg-blue-50 shadow-sm">
-													Loan Calculator
+													Amortization Calculator
 												</Button>
 											</Link>
 											<Link href="/member/profile">

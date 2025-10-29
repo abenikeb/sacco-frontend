@@ -80,8 +80,7 @@ export default function MemberLoanCalculatorPage() {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			
-			const result = await membersLoanAPI.calculateLoan(values)
+			const result = await membersLoanAPI.calculateLoan(values);
 			setCalculationResult(result);
 		} catch (error) {
 			console.error("Error calculating loan:", error);
@@ -97,7 +96,7 @@ export default function MemberLoanCalculatorPage() {
 		<div className="space-y-6">
 			<Card>
 				<CardHeader>
-					<CardTitle>Loan Calculator</CardTitle>
+					<CardTitle>Amortization Calculator</CardTitle>
 					<CardDescription>
 						Calculate your potential loan payments
 					</CardDescription>

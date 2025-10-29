@@ -311,8 +311,8 @@ function MemberDetailPage() {
 					<Tabs defaultValue="all" className="space-y-4">
 						<TabsList>
 							<TabsTrigger value="all">All Transactions</TabsTrigger>
-							<TabsTrigger value="savings">Savings</TabsTrigger>
-							<TabsTrigger value="fees">Fees</TabsTrigger>
+							{/* <TabsTrigger value="savings">Savings</TabsTrigger>
+							<TabsTrigger value="fees">Fees</TabsTrigger> */}
 							<TabsTrigger value="loans">Loans</TabsTrigger>
 						</TabsList>
 						<TabsContent value="all">

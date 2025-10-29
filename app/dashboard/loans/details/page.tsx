@@ -61,10 +61,9 @@ export default function LoanDetailsPage() {
 
 	const fetchLoans = async () => {
 		try {
-			const data = await loanAPI.getLoan()
+			const data = await loanAPI.getLoan();
 			if (data) {
 				setLoans(data);
-				console.log(data)
 			} else {
 				throw new Error("Failed to fetch loans");
 			}
@@ -248,42 +247,48 @@ export default function LoanDetailsPage() {
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{filteredLoans.map((loan) => (
-							<TableRow key={loan.id}>
-								<TableCell>{loan.id}</TableCell>
-								<TableCell>{loan.member.name}</TableCell>
-								<TableCell>
-									{new Intl.NumberFormat("en-ET", {
-										style: "currency",
-										currency: "ETB",
-									}).format(Number(loan.amount))}
-								</TableCell>
-								<TableCell>{loan.interestRate}%</TableCell>
-								<TableCell>{loan.tenureMonths}</TableCell>
-								<TableCell>
-									{new Intl.NumberFormat("en-ET", {
-										style: "currency",
-										currency: "ETB",
-									}).format(calculateExpectedRepayment(loan))}
-								</TableCell>
-								<TableCell>
-									<Badge className={getStatusColor(loan.status)}>
-										{loan.status}
-									</Badge>
-								</TableCell>
-								<TableCell>
-									{new Date(loan.createdAt).toLocaleDateString()}
-								</TableCell>
-								<TableCell>
-									<Button
-										onClick={() =>
-											router.push(`/dashboard/loans/details/${loan.id}`)
-										}>
-										View
-									</Button>
-								</TableCell>
-							</TableRow>
-						))}
+						{filteredLoans.length === 0 ? (
+							<div className="pt-8 text-xl text-gray-500 flex justify-center items-center w-full font-medium">
+								No Pending Loans Found
+							</div>
+						) : (
+							filteredLoans.map((loan) => (
+								<TableRow key={loan.id}>
+									<TableCell>{loan.id}</TableCell>
+									<TableCell>{loan.member.name}</TableCell>
+									<TableCell>
+										{new Intl.NumberFormat("en-ET", {
+											style: "currency",
+											currency: "ETB",
+										}).format(Number(loan.amount))}
+									</TableCell>
+									<TableCell>{loan.interestRate}%</TableCell>
+									<TableCell>{loan.tenureMonths}</TableCell>
+									<TableCell>
+										{new Intl.NumberFormat("en-ET", {
+											style: "currency",
+											currency: "ETB",
+										}).format(calculateExpectedRepayment(loan))}
+									</TableCell>
+									<TableCell>
+										<Badge className={getStatusColor(loan.status)}>
+											{loan.status}
+										</Badge>
+									</TableCell>
+									<TableCell>
+										{new Date(loan.createdAt).toLocaleDateString()}
+									</TableCell>
+									<TableCell>
+										<Button
+											onClick={() =>
+												router.push(`/dashboard/loans/details/${loan.id}`)
+											}>
+											View
+										</Button>
+									</TableCell>
+								</TableRow>
+							))
+						)}
 					</TableBody>
 				</Table>
 			</CardContent>

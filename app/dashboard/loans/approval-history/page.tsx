@@ -59,11 +59,8 @@ export default function ApprovalHistoryPage() {
 				page: "1",
 				pageSize: "50", // Adjust as needed
 			});
-			const response = await loanAPI.getLoanApprovalHistory();
+			const response = await loanAPI.getLoanApprovalHistory(params as any);
 			if (response) {
-				
-
-				
 				setApprovalLogs(response.logs);
 			} else {
 				throw new Error("Failed to fetch approval history");

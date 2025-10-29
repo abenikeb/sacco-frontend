@@ -18,8 +18,6 @@ export enum MembershipApproval {
 	REJECTED,
 }
 
-// i will create a model.ts
-
 const API_BASE_URL = "/api";
 
 const api = axios.create({
@@ -33,7 +31,7 @@ const api = axios.create({
 	},
 });
 
-// 🧩 Request Interceptor
+// Request Interceptor
 api.interceptors.request.use(
 	(config) => {
 		// Add a timestamp param to bypass caching automatically
@@ -51,7 +49,7 @@ api.interceptors.request.use(
 	}
 );
 
-// 🧩 Response Interceptor
+// Response Interceptor
 api.interceptors.response.use(
 	(response) => {
 		// console.log("[API Response]", response.status, response.config.url);
@@ -88,6 +86,131 @@ api.interceptors.response.use(
 // ---------- API WRAPPERS ----------
 //
 
+export const settingsAPI = {
+	// User Management
+	getAllUsers: async (page = 1, limit = 20) => {
+		const response = await api.get("/settings/users", {
+			params: { page, limit },
+		});
+		return response.data;
+	},
+
+	getUserById: async (userId: number) => {
+		const response = await api.get(`/settings/users/${userId}`);
+		return response.data;
+	},
+
+	createUser: async (userData: {
+		name: string;
+		email: string;
+		phone: string;
+		password: string;
+		role: string;
+	}) => {
+		const response = await api.post("/settings/users", userData);
+		return response.data;
+	},
+
+	updateUser: async (
+		userId: number,
+		userData: {
+			name?: string;
+			email?: string;
+			phone?: string;
+			password?: string;
+			role?: string;
+		}
+	) => {
+		const response = await api.put(`/settings/users/${userId}`, userData);
+		return response.data;
+	},
+
+	updateUserRole: async (userId: number, role: string) => {
+		const response = await api.put(`/settings/users/${userId}/role`, { role });
+		return response.data;
+	},
+
+	deleteUser: async (userId: number) => {
+		const response = await api.delete(`/settings/users/${userId}`);
+		return response.data;
+	},
+
+	// Roles & Permissions
+	getAllRoles: async () => {
+		const response = await api.get("/settings/roles");
+		return response.data;
+	},
+
+	getRolePermissions: async (role: string) => {
+		const response = await api.get(`/settings/roles/${role}/permissions`);
+		return response.data;
+	},
+
+	// System Configuration
+	getSystemConfig: async () => {
+		const response = await api.get("/settings/system-config");
+		return response.data;
+	},
+	updateSystemConfig: async (config: Record<string, any>, logoFile?: File) => {
+		if (logoFile) {
+			// Use FormData for file upload
+			const formData = new FormData();
+
+			// Add all config fields to FormData
+			Object.keys(config).forEach((key) => {
+				if (key !== "organizationLogo") {
+					if (Array.isArray(config[key])) {
+						formData.append(key, JSON.stringify(config[key]));
+					} else {
+						formData.append(key, String(config[key]));
+					}
+				}
+			});
+
+			// Add the logo file
+			formData.append("logo", logoFile);
+
+			// Create a separate axios instance for this request without JSON content-type
+			const response = await axios.put(
+				`${API_BASE_URL}/settings/system-config`,
+				formData,
+				{
+					withCredentials: true,
+					headers: {
+						"Cache-Control": "no-cache, no-store, must-revalidate",
+						"Pragma": "no-cache",
+						"Expires": "0",
+						// Don't set Content-Type, let the browser set it with boundary
+					},
+				}
+			);
+			return response.data;
+		} else {
+			// Use regular JSON for updates without file
+			const response = await api.put("/settings/system-config", config);
+			return response.data;
+		}
+	},
+
+	// updateSystemConfig: async (config: Record<string, any>) => {
+	// 	const response = await api.put("/settings/system-config", config);
+	// 	return response.data;
+	// },
+
+	// Audit & Activity
+	getAuditLogs: async (page = 1, limit = 50) => {
+		const response = await api.get("/settings/audit-logs", {
+			params: { page, limit },
+		});
+		return response.data;
+	},
+
+	getUserActivitySummary: async () => {
+		const response = await api.get("/settings/user-activity-summary");
+		return response.data;
+	},
+};
+
 export const dashboardAPI = {
 	getDashboardData: async () => {
 		const response = await api.get("/dashboard");
@@ -119,6 +242,100 @@ export const authAPI = {
 		role?: string;
 	}) => {
 		const response = await api.post("/auth/register", data);
+		return response.data;
+	},
+	getUserPermissions: async (userId: number) => {
+		const response = await api.get(`/permissions/users/${userId}/permissions`);
+		return response.data;
+	},
+};
+
+export const permissionAPI = {
+	// Get all permissions
+	getAllPermissions: async () => {
+		const response = await api.get("/permissions");
+		return response.data;
+	},
+
+	// Get all roles with permissions
+	getAllRolesWithPermissions: async () => {
+		const response = await api.get("/permissions/roles");
+		return response.data;
+	},
+
+	// Get role by ID with permissions
+	getRoleWithPermissions: async (roleId: number) => {
+		const response = await api.get(`/permissions/roles/${roleId}`);
+		return response.data;
+	},
+
+	// Create role
+	createRole: async (name: string, description?: string) => {
+		const response = await api.post("/permissions/roles", {
+			name,
+			description,
+		});
+		return response.data;
+	},
+
+	// Update role
+	updateRole: async (roleId: number, name?: string, description?: string) => {
+		const response = await api.put(`/permissions/roles/${roleId}`, {
+			name,
+			description,
+		});
+		return response.data;
+	},
+
+	// Assign permission to role
+	assignPermissionToRole: async (roleId: number, permissionId: number) => {
+		const response = await api.post(
+			`/permissions/roles/${roleId}/permissions/${permissionId}`
+		);
+		return response.data;
+	},
+
+	// Remove permission from role
+	removePermissionFromRole: async (roleId: number, permissionId: number) => {
+		const response = await api.delete(
+			`/permissions/roles/${roleId}/permissions/${permissionId}`
+		);
+		return response.data;
+	},
+
+	// Get user permissions
+	getUserPermissions: async (userId: number) => {
+		const response = await api.get(`/permissions/users/${userId}/permissions`);
+		return response.data;
+	},
+
+	// Check if user has permission
+	checkUserPermission: async (
+		userId: number,
+		resource: string,
+		action: string
+	) => {
+		const response = await api.post(
+			`/permissions/users/${userId}/check-permission`,
+			{
+				resource,
+				action,
+			}
+		);
+		return response.data;
+	},
+
+	// Assign role to user
+	assignRoleToUser: async (userId: number, roleId: number) => {
+		const response = await api.post(
+			`/permissions/users/${userId}/role/${roleId}`
+		);
+		return response.data;
+	},
+
+	// Initialize default roles and permissions
+	initializeDefaultRoles: async () => {
+		const response = await api.post("/permissions/initialize");
 		return response.data;
 	},
 };
@@ -267,8 +484,7 @@ export const membersSavingsAPI = {
 	},
 };
 
-//withdrawl
-
+//withdrawls
 export const withdrawalAPI = {
 	getCurrentBalance: async (memberId: any) => {
 		const response = await api.get(`/withdrawals/balance/${memberId}`);
@@ -476,6 +692,9 @@ export const loanAPI = {
 	},
 	getDisbursedLoan: async () => {
 		const response = await api.get("/loans/disbursed");
+		console.log({
+			disbursedLOan: response,
+		});
 		return response.data;
 	},
 	approveLoans: async (id: number, status: string, comment: string) => {
@@ -550,77 +769,6 @@ export const loanDocument = {
 
 	getLoanDocument: async () => {
 		const response = await api.get("/members/loans/documents");
-		return response.data;
-	},
-};
-
-export const settingsAPI = {
-	// User Management
-	getAllUsers: async (page = 1, limit = 20) => {
-		const response = await api.get("/settings/users", {
-			params: { page, limit },
-		});
-		return response.data;
-	},
-
-	getUserById: async (userId: number) => {
-		const response = await api.get(`/settings/users/${userId}`);
-		return response.data;
-	},
-
-	createUser: async (userData: {
-		name: string;
-		email: string;
-		phone: string;
-		password: string;
-		role: string;
-	}) => {
-		const response = await api.post("/settings/users", userData);
-		return response.data;
-	},
-
-	updateUserRole: async (userId: number, role: string) => {
-		const response = await api.put(`/settings/users/${userId}/role`, { role });
-		return response.data;
-	},
-
-	deleteUser: async (userId: number) => {
-		const response = await api.delete(`/settings/users/${userId}`);
-		return response.data;
-	},
-
-	// Roles & Permissions
-	getAllRoles: async () => {
-		const response = await api.get("/settings/roles");
-		return response.data;
-	},
-
-	getRolePermissions: async (role: string) => {
-		const response = await api.get(`/settings/roles/${role}/permissions`);
-		return response.data;
-	},
-
-	// System Configuration
-	getSystemConfig: async () => {
-		const response = await api.get("/settings/system-config");
-		return response.data;
-	},
-
-	updateSystemConfig: async (config: Record<string, any>) => {
-		const response = await api.put("/settings/system-config", config);
-		return response.data;
-	},
-
-	// Audit & Activity
-	getAuditLogs: async (page = 1, limit = 50) => {
-		const response = await api.get("/settings/audit-logs", {
-			params: { page, limit },
-		});
-		return response.data;
-	},
-
-	getUserActivitySummary: async () => {
-		const response = await api.get("/settings/user-activity-summary");
 		return response.data;
 	},
 };

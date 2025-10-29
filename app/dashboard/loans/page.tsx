@@ -42,7 +42,7 @@ export default function LoansListPage() {
 			if (!response) {
 				throw new Error("Failed to fetch loans");
 			}
-			
+
 			setLoans(response);
 		} catch (error) {
 			console.error("Error fetching loans:", error);
@@ -116,7 +116,7 @@ export default function LoansListPage() {
 							<TableRow key={loan.id}>
 								<TableCell>{loan.id}</TableCell>
 								<TableCell>{loan.memberName}</TableCell>
-								<TableCell>${Number(loan.amount).toFixed(2)}</TableCell>
+								<TableCell>ETB {Number(loan.amount).toFixed(2)}</TableCell>
 								<TableCell>{loan.interestRate}%</TableCell>
 								<TableCell>{loan.tenureMonths}</TableCell>
 								<TableCell>

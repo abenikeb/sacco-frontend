@@ -75,7 +75,7 @@ export function MemberShell({ children }: MemberShellProps) {
 			icon: PiggyBank,
 		},
 		{
-			title: "Loan Calculator",
+			title: "Amortization Calculator",
 			href: "/member/loans/calculator",
 			icon: Calculator,
 		},

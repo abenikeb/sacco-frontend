@@ -1,10 +1,18 @@
 "use client";
 
+import type React from "react";
+
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authAPI } from "@/lib/api";
+import { PermissionChecker, type Permission } from "@/lib/permissions";
 
-type UserRole = "ACCOUNTANT" | "MANAGER" | "SUPERVISOR" | "COMMITTEE";
+type UserRole =
+	| "ACCOUNTANT"
+	| "MANAGER"
+	| "SUPERVISOR"
+	| "COMMITTEE"
+	| "MEMBER";
 
 type User = {
 	id: number;
@@ -18,6 +26,8 @@ type User = {
 type AuthContextType = {
 	user: User | null;
 	loading: boolean;
+	permissions: Permission[];
+	permissionChecker: PermissionChecker;
 	login: (
 		identifier: string,
 		password: string
@@ -38,22 +48,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		return null;
 	});
 
+	const [permissions, setPermissions] = useState<Permission[]>([]);
+	const [permissionChecker] = useState(() => new PermissionChecker());
 	const [loading, setLoading] = useState(true);
 	const router = useRouter();
 
-	// Load user from localStorage if token exists
+	// Load user and permissions from localStorage if token exists
 	useEffect(() => {
 		const storedUser = localStorage.getItem("user");
-		if (!user) {
-			// router.push('/')
-			return;
-		}
+		const storedPermissions = localStorage.getItem("permissions");
 
 		if (storedUser) {
-			setUser(JSON.parse(storedUser));
+			const parsedUser = JSON.parse(storedUser);
+			setUser(parsedUser);
+
+			if (storedPermissions) {
+				const parsedPermissions = JSON.parse(storedPermissions);
+				setPermissions(parsedPermissions);
+				permissionChecker.setPermissions(parsedPermissions);
+			}
 		}
 		setLoading(false);
-	}, []);
+	}, [permissionChecker]);
 
 	const login = async (
 		identifier: string,
@@ -65,6 +81,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			if (user) {
 				localStorage.setItem("user", JSON.stringify(user));
 				setUser(user);
+
+				try {
+					const userPermissions = await authAPI.getUserPermissions(user.id);
+					localStorage.setItem("permissions", JSON.stringify(userPermissions));
+					setPermissions(userPermissions);
+					permissionChecker.setPermissions(userPermissions);
+				} catch (permError) {
+					console.warn(
+						"[AuthProvider] Failed to fetch permissions:",
+						permError
+					);
+				}
+
 				const params = new URLSearchParams(window.location.search);
 				const callbackUrl =
 					params.get("callbackUrl") ||
@@ -90,7 +119,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		} catch (error) {
 		} finally {
 			localStorage.removeItem("user");
+			localStorage.removeItem("permissions");
 			setUser(null);
+			setPermissions([]);
+			permissionChecker.setPermissions([]);
 			router.push("/login");
 			setLoading(false);
 		}
@@ -101,6 +133,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			value={{
 				user,
 				loading,
+				permissions,
+				permissionChecker,
 				login,
 				logout,
 				isAuthenticated: !!user,

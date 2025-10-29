@@ -80,7 +80,7 @@ export default function LoanCalculatorPage() {
 			// 	},
 			// 	body: JSON.stringify(values),
 			// });
-			const response = await membersLoanAPI.calculateLoan(values)
+			const response = await membersLoanAPI.calculateLoan(values);
 
 			if (!response) {
 				throw new Error("Failed to calculate loan");
@@ -88,7 +88,7 @@ export default function LoanCalculatorPage() {
 
 			// const result = await response.json();
 			setCalculationResult(response);
-			console.log("calculated", response)
+			console.log("calculated", response);
 		} catch (error) {
 			console.error("Error calculating loan:", error);
 			toast({
@@ -103,7 +103,7 @@ export default function LoanCalculatorPage() {
 		<div className="space-y-6">
 			<Card>
 				<CardHeader>
-					<CardTitle>Loan Calculator</CardTitle>
+					<CardTitle>Amortization Calculator</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<Form {...form}>

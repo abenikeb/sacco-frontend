@@ -759,7 +759,7 @@ export default function LoanApplicationPage() {
 				<Button
 					variant="outline"
 					onClick={() => router.push("/member/loans/calculator")}>
-					Loan Calculator
+					Amortization Calculator
 				</Button>
 				<Button variant="outline" onClick={() => router.push("/member/loans")}>
 					Back to Loans
