@@ -53,17 +53,19 @@ import { loanAPI, loanDocument } from "@/lib/api";
 interface LoanDetail {
 	id: number;
 	memberId: number;
-	amount: number;
-	remainingAmount?: number;
-	interestRate: number;
+	loanProductId: number;
+	amount: string | number;
+	remainingAmount?: string | number;
+	interestRate: string | number;
 	tenureMonths: number;
 	status: string;
 	createdAt: string;
+	updatedAt: string;
 	member: {
 		name: string;
 		etNumber: number;
-		email: string;
-		phone: string;
+		email?: string;
+		phone?: string;
 	};
 	approvalLogs: Array<{
 		id: number;
@@ -140,6 +142,9 @@ export default function IndividualLoanDetailPage() {
 			const data = await loanAPI.getLoanById(params.id);
 
 			if (data) {
+				console.log({
+					loanDetailData: data,
+				});
 				setLoanDetail(data);
 			} else {
 				throw new Error("Failed to fetch loan detail");
@@ -353,7 +358,7 @@ export default function IndividualLoanDetailPage() {
 		if (!loanDetail) return null;
 
 		const totalAmount = Number(loanDetail.amount);
-		const interestRate = 9.5 / 100; // Fixed 9.5% interest rate
+		const interestRate = Number(loanDetail.interestRate) / 100;
 		const tenureMonths = loanDetail.tenureMonths;
 
 		// Simple interest calculation: Principal × Rate × Time
@@ -393,6 +398,7 @@ export default function IndividualLoanDetailPage() {
 			remainingAmount,
 			progressPercentage,
 			repaymentStatusCounts,
+			interestRate: Number(loanDetail.interestRate),
 		};
 	}, [loanDetail]);
 
@@ -525,7 +531,7 @@ export default function IndividualLoanDetailPage() {
 							</div>
 							<div className="p-3 border rounded-md">
 								<h3 className="text-sm font-medium text-muted-foreground">
-									Interest (9.5%)
+									Interest ({loanSummary.interestRate}%)
 								</h3>
 								<p className="text-2xl font-bold">
 									ETB {loanSummary.totalInterest.toFixed(2)}
@@ -742,13 +748,13 @@ export default function IndividualLoanDetailPage() {
 							<h3 className="text-sm font-medium text-muted-foreground">
 								Email
 							</h3>
-							<p className="font-medium">{loanDetail.member.email}</p>
+							<p className="font-medium">{loanDetail.member.email || "N/A"}</p>
 						</div>
 						<div>
 							<h3 className="text-sm font-medium text-muted-foreground">
 								Phone
 							</h3>
-							<p className="font-medium">{loanDetail.member.phone}</p>
+							<p className="font-medium">{loanDetail.member.phone || "N/A"}</p>
 						</div>
 						<div>
 							<h3 className="text-sm font-medium text-muted-foreground">
@@ -762,7 +768,9 @@ export default function IndividualLoanDetailPage() {
 							<h3 className="text-sm font-medium text-muted-foreground">
 								Interest Rate
 							</h3>
-							<p className="font-medium">9.5% (Fixed)</p>
+							<p className="font-medium">
+								{Number(loanDetail.interestRate)}% (Fixed)
+							</p>
 						</div>
 						<div>
 							<h3 className="text-sm font-medium text-muted-foreground">
@@ -772,10 +780,32 @@ export default function IndividualLoanDetailPage() {
 						</div>
 						<div>
 							<h3 className="text-sm font-medium text-muted-foreground">
+								Loan Product ID
+							</h3>
+							<p className="font-medium">{loanDetail.loanProductId}</p>
+						</div>
+						<div>
+							<h3 className="text-sm font-medium text-muted-foreground">
+								Remaining Amount
+							</h3>
+							<p className="font-medium">
+								ETB {Number(loanDetail.remainingAmount || 0).toFixed(2)}
+							</p>
+						</div>
+						<div>
+							<h3 className="text-sm font-medium text-muted-foreground">
 								Created At
 							</h3>
 							<p className="font-medium">
 								{new Date(loanDetail.createdAt).toLocaleString()}
+							</p>
+						</div>
+						<div>
+							<h3 className="text-sm font-medium text-muted-foreground">
+								Updated At
+							</h3>
+							<p className="font-medium">
+								{new Date(loanDetail.updatedAt).toLocaleString()}
 							</p>
 						</div>
 					</div>
@@ -948,9 +978,9 @@ export default function IndividualLoanDetailPage() {
 								<SelectContent>
 									<SelectItem value="APPROVED">Approved</SelectItem>
 									<SelectItem value="REJECTED">Rejected</SelectItem>
-									{user?.role === "COMMITTEE" && (
+									{/* {user?.role === "COMMITTEE" && (
 										<SelectItem value="DISBURSED">Disbursed</SelectItem>
-									)}
+									)} */}
 								</SelectContent>
 							</Select>
 						</div>
@@ -1137,8 +1167,8 @@ export default function IndividualLoanDetailPage() {
 // 	PieChart,
 // 	RefreshCw,
 // 	User,
+// 	TrendingUp,
 // } from "lucide-react";
-// import { loadBindings } from "next/dist/build/swc";
 // import { loanAPI, loanDocument } from "@/lib/api";
 
 // interface LoanDetail {
@@ -1206,6 +1236,7 @@ export default function IndividualLoanDetailPage() {
 // 	const [selectedRepayment, setSelectedRepayment] = useState<number | null>(
 // 		null
 // 	);
+// 	const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
 // 	const [paymentFormData, setPaymentFormData] = useState<PaymentFormData>({
 // 		repaymentId: 0,
@@ -1230,52 +1261,72 @@ export default function IndividualLoanDetailPage() {
 // 			const data = await loanAPI.getLoanById(params.id);
 
 // 			if (data) {
+// 				console.log({
+// 					loanDetailData: data,
+// 				});
 // 				setLoanDetail(data);
 // 			} else {
 // 				throw new Error("Failed to fetch loan detail");
 // 			}
 // 		} catch (error) {
 // 			console.error("Error fetching loan detail:", error);
-// 			toast({ title: "Failed to fetch loan detail", variant: "destructive" });
+// 			toast({
+// 				title: "Error",
+// 				description: "Failed to fetch loan details. Please try again.",
+// 				variant: "destructive",
+// 			});
 // 		} finally {
 // 			setIsLoading(false);
 // 		}
 // 	};
 
 // 	const handleStatusUpdate = async () => {
+// 		if (!newStatus) {
+// 			toast({
+// 				title: "Validation Error",
+// 				description: "Please select a new status",
+// 				variant: "destructive",
+// 			});
+// 			return;
+// 		}
+
+// 		setIsUpdatingStatus(true);
 // 		try {
 // 			const response = await loanAPI.approveLoans(
 // 				Number(params.id),
 // 				newStatus,
 // 				comments
 // 			);
-// 			console.log(params.id);
 
 // 			if (response) {
+// 				const statusMessages: Record<string, string> = {
+// 					APPROVED: "Loan has been approved successfully",
+// 					REJECTED: "Loan has been rejected",
+// 					DISBURSED: "Loan has been disbursed to the member",
+// 				};
+
 // 				toast({
-// 					title: "Loan status updated successfully",
+// 					title: "Success",
 // 					description:
-// 						user?.role === "COMMITTEE" && newStatus === "APPROVED"
-// 							? "The loan has been approved and disbursed."
-// 							: `The loan status has been updated to ${newStatus}.`,
+// 						statusMessages[newStatus] || `Loan status updated to ${newStatus}`,
 // 				});
 // 				setIsUpdateDialogOpen(false);
-// 				fetchLoanDetail(); // Refresh the loan details
+// 				setNewStatus("");
+// 				setComments("");
+// 				fetchLoanDetail();
 // 			} else {
-// 				toast({
-// 					title: "Submission Failed",
-// 					description: "Failed to update loan status",
-// 					variant: "destructive",
-// 				});
-// 				throw new Error(response.error || "Failed to update loan status");
+// 				throw new Error("Failed to update loan status");
 // 			}
 // 		} catch (error) {
-// 			console.error("Error updating loan status:", error);
+// 			const errorMessage =
+// 				error instanceof Error ? error.message : "An unexpected error occurred";
 // 			toast({
-// 				title: "Failed to update loan status",
-// 				description: (error as Error).message,
+// 				title: "Failed to Update Status",
+// 				description: errorMessage,
 // 				variant: "destructive",
 // 			});
+// 		} finally {
+// 			setIsUpdatingStatus(false);
 // 		}
 // 	};
 
@@ -1283,13 +1334,6 @@ export default function IndividualLoanDetailPage() {
 // 		setIsDocumentLoading(true);
 // 		setDocumentError(null);
 // 		try {
-// 			// Use the full path for local files
-// 			// const fullUrl = documentUrl.startsWith("http")
-// 			// 	? documentUrl
-// 			// 	: `/${documentUrl}`;
-// 			// const response = await fetch(
-// 			// 	`/api/loans/documents/view?url=${encodeURIComponent(fullUrl)}`
-// 			// );
 // 			const response = await loanDocument.getLoanDocumentByUrl(documentUrl);
 // 			if (response) {
 // 				const url = URL.createObjectURL(response);
@@ -1310,12 +1354,6 @@ export default function IndividualLoanDetailPage() {
 // 		fileName: string
 // 	) => {
 // 		try {
-// 			const fullUrl = documentUrl.startsWith("http")
-// 				? documentUrl
-// 				: `/${documentUrl}`;
-// 			// const response = await fetch(
-// 			// 	`/api/loans/documents/view?url=${encodeURIComponent(fullUrl)}`
-// 			// );
 // 			const response = await loanDocument.getLoanDocumentByUrl(documentUrl);
 // 			if (response) {
 // 				const url = URL.createObjectURL(response);
@@ -1332,8 +1370,8 @@ export default function IndividualLoanDetailPage() {
 // 		} catch (error) {
 // 			console.error("Error downloading document:", error);
 // 			toast({
-// 				title: "Failed to download document",
-// 				description: "Please try again later.",
+// 				title: "Download Failed",
+// 				description: "Unable to download the document. Please try again.",
 // 				variant: "destructive",
 // 			});
 // 		}
@@ -1351,6 +1389,15 @@ export default function IndividualLoanDetailPage() {
 // 	};
 
 // 	const handlePaymentSubmit = async () => {
+// 		if (paymentFormData.amount <= 0) {
+// 			toast({
+// 				title: "Validation Error",
+// 				description: "Payment amount must be greater than 0",
+// 				variant: "destructive",
+// 			});
+// 			return;
+// 		}
+
 // 		setIsSubmittingPayment(true);
 // 		try {
 // 			const response = await fetch(
@@ -1372,21 +1419,31 @@ export default function IndividualLoanDetailPage() {
 
 // 			if (response.ok) {
 // 				toast({
-// 					title: "Payment recorded successfully",
-// 					description: `Payment of ETB ${paymentFormData.amount.toFixed(
+// 					title: "Payment Recorded",
+// 					description: `ETB ${paymentFormData.amount.toFixed(
 // 						2
-// 					)} has been recorded.`,
+// 					)} has been successfully recorded as ${paymentFormData.sourceType.replace(
+// 						/_/g,
+// 						" "
+// 					)}`,
 // 				});
 // 				setIsPaymentDialogOpen(false);
-// 				fetchLoanDetail(); // Refresh the loan details
+// 				setPaymentFormData({
+// 					repaymentId: 0,
+// 					amount: 0,
+// 					reference: "",
+// 					sourceType: "MANUAL_PAYMENT",
+// 				});
+// 				fetchLoanDetail();
 // 			} else {
 // 				throw new Error(data.error || "Failed to record payment");
 // 			}
 // 		} catch (error) {
-// 			console.error("Error recording payment:", error);
+// 			const errorMessage =
+// 				error instanceof Error ? error.message : "An unexpected error occurred";
 // 			toast({
-// 				title: "Failed to record payment",
-// 				description: (error as Error).message,
+// 				title: "Payment Failed",
+// 				description: errorMessage,
 // 				variant: "destructive",
 // 			});
 // 		} finally {
@@ -1416,41 +1473,24 @@ export default function IndividualLoanDetailPage() {
 // 		}
 // 	};
 
-// 	// Calculate loan summary statistics
 // 	const loanSummary = useMemo(() => {
 // 		if (!loanDetail) return null;
 
 // 		const totalAmount = Number(loanDetail.amount);
-// 		const interestRate = Number(loanDetail.interestRate) / 100;
+// 		const interestRate = 9.5 / 100; // Fixed 9.5% interest rate
 // 		const tenureMonths = loanDetail.tenureMonths;
 
-// 		// Simple interest calculation
+// 		// Simple interest calculation: Principal × Rate × Time
 // 		const totalInterest = totalAmount * interestRate * (tenureMonths / 12);
 // 		const totalRepayable = totalAmount + totalInterest;
 // 		const monthlyPayment = totalRepayable / tenureMonths;
 
-// 		// Calculate paid and remaining amounts
-
-// 		// const totalPaid = loanDetail.loanRepayments.reduce(
-// 		// 	(sum, repayment) => sum + Number(repayment.paidAmount),
-// 		// 	0
-
-// 		// );
-// 		console.log("TOTAL PAID ", loanDetail.loanRepayments);
-
 // 		const totalPaid = loanDetail.loanRepayments.reduce((sum, repayment) => {
-// 			if (repayment.paidAmount !== undefined) {
-// 				return sum + Number(repayment.paidAmount);
-// 			} else if (repayment.status === "PAID") {
-// 				return sum + Number(repayment.amount);
-// 			}
-// 			return sum;
+// 			const paidAmount = Number(repayment.paidAmount) || 0;
+// 			return sum + paidAmount;
 // 		}, 0);
 
-// 		const remainingAmount =
-// 			loanDetail.remainingAmount !== undefined
-// 				? Number(loanDetail.remainingAmount)
-// 				: totalRepayable - totalPaid;
+// 		const remainingAmount = Math.max(0, totalRepayable - totalPaid);
 
 // 		// Calculate progress percentage
 // 		const progressPercentage = Math.min(
@@ -1527,9 +1567,6 @@ export default function IndividualLoanDetailPage() {
 // 						<Button variant="outline" onClick={() => setSelectedDocument(null)}>
 // 							Close
 // 						</Button>
-// 						<Button onClick={() => setIsUpdateDialogOpen(true)}>
-// 							Update Loan Status
-// 						</Button>
 // 					</div>
 // 				</DialogContent>
 // 			</Dialog>
@@ -1544,7 +1581,7 @@ export default function IndividualLoanDetailPage() {
 // 				<CardHeader>
 // 					<CardTitle className="flex items-center gap-2">
 // 						<PieChart className="h-5 w-5" />
-// 						Loan Summary
+// 						Loan Summary & Active Balance
 // 					</CardTitle>
 // 				</CardHeader>
 // 				<CardContent>
@@ -1589,7 +1626,8 @@ export default function IndividualLoanDetailPage() {
 // 												onClick={() =>
 // 													openPaymentDialog(
 // 														nextPaymentDue.id,
-// 														Number(nextPaymentDue.amount)
+// 														Number(nextPaymentDue.amount) -
+// 															Number(nextPaymentDue.paidAmount)
 // 													)
 // 												}>
 // 												Record Payment
@@ -1611,7 +1649,7 @@ export default function IndividualLoanDetailPage() {
 // 							</div>
 // 							<div className="p-3 border rounded-md">
 // 								<h3 className="text-sm font-medium text-muted-foreground">
-// 									Interest
+// 									Interest (9.5%)
 // 								</h3>
 // 								<p className="text-2xl font-bold">
 // 									ETB {loanSummary.totalInterest.toFixed(2)}
@@ -1625,13 +1663,44 @@ export default function IndividualLoanDetailPage() {
 // 									ETB {loanSummary.monthlyPayment.toFixed(2)}
 // 								</p>
 // 							</div>
-// 							<div className="p-3 border rounded-md">
+// 							<div className="p-3 border rounded-md bg-blue-50">
 // 								<h3 className="text-sm font-medium text-muted-foreground">
-// 									Remaining
+// 									Remaining Balance
 // 								</h3>
-// 								<p className="text-2xl font-bold">
+// 								<p className="text-2xl font-bold text-blue-600">
 // 									ETB {loanSummary.remainingAmount.toFixed(2)}
 // 								</p>
+// 							</div>
+// 						</div>
+// 					</div>
+
+// 					<div className="mt-6 p-4 border rounded-md bg-blue-50">
+// 						<div className="flex items-start gap-3">
+// 							<TrendingUp className="h-5 w-5 text-blue-600 mt-0.5" />
+// 							<div className="flex-1">
+// 								<h4 className="font-medium text-blue-900">
+// 									Active Loan Balance
+// 								</h4>
+// 								<div className="grid grid-cols-3 gap-4 mt-3">
+// 									<div>
+// 										<p className="text-xs text-blue-700">Total Disbursed</p>
+// 										<p className="text-lg font-bold text-blue-900">
+// 											ETB {loanSummary.totalRepayable.toFixed(2)}
+// 										</p>
+// 									</div>
+// 									<div>
+// 										<p className="text-xs text-blue-700">Total Repaid</p>
+// 										<p className="text-lg font-bold text-green-600">
+// 											ETB {loanSummary.totalPaid.toFixed(2)}
+// 										</p>
+// 									</div>
+// 									<div>
+// 										<p className="text-xs text-blue-700">Outstanding</p>
+// 										<p className="text-lg font-bold text-red-600">
+// 											ETB {loanSummary.remainingAmount.toFixed(2)}
+// 										</p>
+// 									</div>
+// 								</div>
 // 							</div>
 // 						</div>
 // 					</div>
@@ -1665,7 +1734,7 @@ export default function IndividualLoanDetailPage() {
 // 					<TableBody>
 // 						{loanDetail?.loanRepayments.map((repayment) => {
 // 							const amount = Number(repayment.amount);
-// 							const paidAmount = Number(repayment.paidAmount);
+// 							const paidAmount = Number(repayment.paidAmount) || 0;
 // 							const remainingAmount = amount - paidAmount;
 // 							const isPending = repayment.status.toLowerCase() === "pending";
 // 							const isOverdue =
@@ -1682,7 +1751,7 @@ export default function IndividualLoanDetailPage() {
 // 									<TableCell>ETB {paidAmount.toFixed(2)}</TableCell>
 // 									<TableCell>ETB {remainingAmount.toFixed(2)}</TableCell>
 // 									<TableCell>
-// 										{repayment.sourceType.replace("_", " ")}
+// 										{repayment.sourceType.replace(/_/g, " ")}
 // 									</TableCell>
 // 									<TableCell>{repayment.reference || "-"}</TableCell>
 // 									<TableCell>
@@ -1694,7 +1763,7 @@ export default function IndividualLoanDetailPage() {
 // 										</Badge>
 // 									</TableCell>
 // 									<TableCell>
-// 										{isPending && (
+// 										{isPending && remainingAmount > 0 && (
 // 											<Button
 // 												size="sm"
 // 												variant="outline"
@@ -1752,7 +1821,7 @@ export default function IndividualLoanDetailPage() {
 // 					<Button
 // 						variant="outline"
 // 						onClick={fetchLoanDetail}
-// 						className="w-full sm:w-auto">
+// 						className="w-full sm:w-auto bg-transparent">
 // 						<RefreshCw className="h-4 w-4 mr-2" />
 // 						Refresh
 // 					</Button>
@@ -1817,7 +1886,7 @@ export default function IndividualLoanDetailPage() {
 // 							<h3 className="text-sm font-medium text-muted-foreground">
 // 								Interest Rate
 // 							</h3>
-// 							<p className="font-medium">{loanDetail.interestRate}%</p>
+// 							<p className="font-medium">9.5% (Fixed)</p>
 // 						</div>
 // 						<div>
 // 							<h3 className="text-sm font-medium text-muted-foreground">
@@ -1994,31 +2063,55 @@ export default function IndividualLoanDetailPage() {
 // 						<DialogTitle>Update Loan Status</DialogTitle>
 // 					</DialogHeader>
 // 					<div className="grid gap-4 py-4">
-// 						<Select onValueChange={setNewStatus}>
-// 							<SelectTrigger>
-// 								<SelectValue placeholder="Select new status" />
-// 							</SelectTrigger>
-// 							<SelectContent>
-// 								{/* <SelectItem
-// 								value="PENDING" >
-// 								Pending
-// 								</SelectItem> */}
-
-// 								{/* <SelectItem value="VERIFIED">Verified</SelectItem> */}
-// 								<SelectItem value="APPROVED">Approved</SelectItem>
-// 								<SelectItem value="REJECTED">Rejected</SelectItem>
-// 								{user?.role === "COMMITTEE" && (
-// 									<SelectItem value="DISBURSED">Disbursed</SelectItem>
-// 								)}
-// 							</SelectContent>
-// 						</Select>
-// 						<Textarea
-// 							placeholder="Enter comments"
-// 							value={comments}
-// 							onChange={(e) => setComments(e.target.value)}
-// 						/>
-// 						<Button onClick={handleStatusUpdate}>Update Status</Button>
+// 						<div className="space-y-2">
+// 							<Label htmlFor="status">New Status</Label>
+// 							<Select onValueChange={setNewStatus} value={newStatus}>
+// 								<SelectTrigger id="status">
+// 									<SelectValue placeholder="Select new status" />
+// 								</SelectTrigger>
+// 								<SelectContent>
+// 									<SelectItem value="APPROVED">Approved</SelectItem>
+// 									<SelectItem value="REJECTED">Rejected</SelectItem>
+// 									{user?.role === "COMMITTEE" && (
+// 										<SelectItem value="DISBURSED">Disbursed</SelectItem>
+// 									)}
+// 								</SelectContent>
+// 							</Select>
+// 						</div>
+// 						<div className="space-y-2">
+// 							<Label htmlFor="comments">Comments</Label>
+// 							<Textarea
+// 								id="comments"
+// 								placeholder="Enter comments (optional)"
+// 								value={comments}
+// 								onChange={(e) => setComments(e.target.value)}
+// 								className="min-h-[100px]"
+// 							/>
+// 						</div>
 // 					</div>
+// 					<DialogFooter>
+// 						<Button
+// 							variant="outline"
+// 							onClick={() => {
+// 								setIsUpdateDialogOpen(false);
+// 								setNewStatus("");
+// 								setComments("");
+// 							}}>
+// 							Cancel
+// 						</Button>
+// 						<Button
+// 							onClick={handleStatusUpdate}
+// 							disabled={isUpdatingStatus || !newStatus}>
+// 							{isUpdatingStatus ? (
+// 								<>
+// 									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+// 									Updating...
+// 								</>
+// 							) : (
+// 								"Update Status"
+// 							)}
+// 						</Button>
+// 					</DialogFooter>
 // 				</DialogContent>
 // 			</Dialog>
 
@@ -2034,6 +2127,7 @@ export default function IndividualLoanDetailPage() {
 // 								id="amount"
 // 								type="number"
 // 								step="0.01"
+// 								min="0"
 // 								value={paymentFormData.amount}
 // 								onChange={(e) =>
 // 									setPaymentFormData({
