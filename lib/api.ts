@@ -663,10 +663,12 @@ export const loanAPI = {
 		const response = await api.get("/loans");
 		return response.data;
 	},
+
 	getLoanProduct: async () => {
 		const response = await api.get("/loan-products");
 		return response.data;
 	},
+
 	getLoanById: async (id: string[] | string) => {
 		let param: number;
 
@@ -680,16 +682,19 @@ export const loanAPI = {
 		const response = await api.get(`/loans/${param}`);
 		return response.data;
 	},
+
 	getLoanApprovalHistory: async (query: LoanApprovalHistoryQuery = {}) => {
 		const response = await api.get("/loans/approval-history", {
 			params: query,
 		});
 		return response.data;
 	},
+
 	getPendingLoans: async () => {
 		const response = await api.get("/loans/pending");
 		return response.data;
 	},
+
 	getDisbursedLoan: async () => {
 		const response = await api.get("/loans/disbursed");
 		console.log({
@@ -697,6 +702,7 @@ export const loanAPI = {
 		});
 		return response.data;
 	},
+
 	approveLoans: async (id: number, status: string, comment: string) => {
 		const response = await api.post(`/loans/approve/${id}`, {
 			status,
@@ -704,12 +710,14 @@ export const loanAPI = {
 		});
 		return response.data;
 	},
+
 	autoAssignMemeber: async (totalContributions: any) => {
 		const response = await api.post("/loan-products/auto-assign", {
 			totalContributions,
 		});
 		return response.data;
 	},
+
 	updateLoanProduct: async ({ url, method, formData }: any) => {
 		console.log({ url, method, formData });
 		if (method === "POST") {
@@ -721,6 +729,26 @@ export const loanAPI = {
 		const response = await api.put(url, {
 			formData,
 		});
+		return response.data;
+	},
+
+	updateRepaymentStatusUpdate: async (
+		amount: number,
+		reference: string,
+		sourceType: string,
+		memberId: number | undefined,
+		loanId: string | string[],
+		repaymentId: string | number
+	) => {
+		const response = await api.post(
+			`/loans/${loanId}/repayments/${repaymentId}/pay`,
+			{
+				amount,
+				reference,
+				sourceType,
+				memberId,
+			}
+		);
 		return response.data;
 	},
 };
