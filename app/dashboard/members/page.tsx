@@ -283,7 +283,7 @@ export default function MembersListPage() {
 								{canUpdateMembers && (
 									<DropdownMenuItem
 										onClick={() =>
-											router.push(`/dashboard/members/edit/${member.etNumber}`)
+											router.push(`/dashboard/members/edit/${member.id}`)
 										}>
 										Edit Member
 									</DropdownMenuItem>
