@@ -31,6 +31,21 @@ const api = axios.create({
 	},
 });
 
+//--------------------------------------
+
+const API_BASE_URL_V1 = "/api-v1";
+
+const api_v1 = axios.create({
+	baseURL: API_BASE_URL_V1,
+	withCredentials: true, // ✅ Important for cookies (session/token)
+	headers: {
+		"Content-Type": "application/json",
+		"Cache-Control": "no-cache, no-store, must-revalidate",
+		"Pragma": "no-cache",
+		"Expires": "0",
+	},
+});
+
 // Request Interceptor
 api.interceptors.request.use(
 	(config) => {
@@ -85,6 +100,90 @@ api.interceptors.response.use(
 //
 // ---------- API WRAPPERS ----------
 //
+
+export const membersAPI = {
+	// Register a new member with file uploads
+	registerMember: async (formData: FormData) => {
+		const response = await api_v1.post("/members/register", formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
+		console.log({ registerMemberResponse: response });
+		return response.data;
+	},
+
+	getMemberbyId: async (memeberId: string) => {
+		const response = await api_v1.get(`/members/${memeberId}`);
+		return response.data;
+	},
+
+	getMember: async (etNumber: string) => {
+		const response = await api.get(`/members/${etNumber}`);
+		return response.data;
+	},
+
+	getCurrentMember: async () => {
+		const response = await api.get(`/members/current/user`);
+		return response.data;
+	},
+
+	getMembersByDate: async (effectiveDate: Date) => {
+		const response = await api.get("/members__", {
+			params: { effectiveDate: effectiveDate.toISOString() },
+		});
+		return response.data;
+	},
+
+	getMembers: async () => {
+		const response = await api.get(`/members__`);
+		return response.data;
+	},
+	// this needs to be checked
+	uploadKYC: async (formData: FormData) => {
+		const response = await api.post("/member/kyc-upload", formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
+		return response.data;
+	},
+
+	importMembers: async (members: MemberData[]) => {
+		const response = await api.post("/members__/import", members, {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+		return response.data;
+	},
+
+	getWillingDeposits: async (userId: number | undefined) => {
+		const response = await api.get(
+			`/willing-deposit/requests?memberId=${userId}`
+		);
+		return response.data;
+	},
+
+	willingDepositRequest: async (data: {
+		amount: number;
+		reason: string;
+		paymentMethod: string;
+		memberId: number | undefined;
+	}) => {
+		const response = await api.post("/willing-deposit/request", data);
+		return response.data;
+	},
+
+	updateMemberWithFiles: async (id: string, formData: FormData) => {
+		const response = await api_v1.patch(`/members/${id}`, formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
+		return response.data;
+	},
+};
 
 export const settingsAPI = {
 	// User Management
@@ -336,65 +435,6 @@ export const permissionAPI = {
 	// Initialize default roles and permissions
 	initializeDefaultRoles: async () => {
 		const response = await api.post("/permissions/initialize");
-		return response.data;
-	},
-};
-
-export const membersAPI = {
-	getMember: async (etNumber: string) => {
-		const response = await api.get(`/members/${etNumber}`);
-		return response.data;
-	},
-
-	getCurrentMember: async () => {
-		const response = await api.get(`/members/current/user`);
-		return response.data;
-	},
-
-	getMembersByDate: async (effectiveDate: Date) => {
-		const response = await api.get("/members__", {
-			params: { effectiveDate: effectiveDate.toISOString() },
-		});
-		return response.data;
-	},
-
-	getMembers: async () => {
-		const response = await api.get(`/members__`);
-		return response.data;
-	},
-	// this needs to be checked
-	uploadKYC: async (formData: FormData) => {
-		const response = await api.post("/member/kyc-upload", formData, {
-			headers: {
-				"Content-Type": "multipart/form-data",
-			},
-		});
-		return response.data;
-	},
-
-	importMembers: async (members: MemberData[]) => {
-		const response = await api.post("/members__/import", members, {
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
-		return response.data;
-	},
-
-	getWillingDeposits: async (userId: number | undefined) => {
-		const response = await api.get(
-			`/willing-deposit/requests?memberId=${userId}`
-		);
-		return response.data;
-	},
-
-	willingDepositRequest: async (data: {
-		amount: number;
-		reason: string;
-		paymentMethod: string;
-		memberId: number | undefined;
-	}) => {
-		const response = await api.post("/willing-deposit/request", data);
 		return response.data;
 	},
 };
