@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/auth-provider";
 import { settingsAPI } from "@/lib/api";
 import { cn } from "@/lib/utils";
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 interface DashboardShellProps {
 	children: React.ReactNode;
@@ -214,7 +215,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
 						{orgConfig?.organizationLogo ? (
 							<img
 								src={
-									`http://localhost:3000${orgConfig?.organizationLogo}` ||
+									`${API_URL}${orgConfig?.organizationLogo}` ||
 									"/placeholder.svg"
 								}
 								alt="Organization Logo"
